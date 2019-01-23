@@ -41,13 +41,15 @@ impl<'a> System<'a> for UpdateVel {
                         ReadStorage<'a, Mass>);
 
     fn run(&mut self, data: Self::SystemData) {
+        use specs::ParJoin;
         use specs::Join;
-        let (entities, mut vel_storage, pos_storeage, mass_storage) = data;
-        
-        for (vel, pos, mass) in (&mut vel_storage, &pos_storeage, &mass_storage).join() {
-            // vel.x = 0.0;
-            // vel.y = 0.0;
+        use specs::prelude::ParallelIterator;
 
+        let (entities, mut vel_storage, pos_storeage, mass_storage) = data;
+
+        (&mut vel_storage, &pos_storeage, &mass_storage)
+        .par_join()
+        .for_each(|(vel, pos, mass)| {
             for ent in entities.join(){
                 let other_mass = mass_storage.get(ent);
                 let other_pos = pos_storeage.get(ent);
@@ -72,7 +74,7 @@ impl<'a> System<'a> for UpdateVel {
                     }
                 }
             }
-        }
+        });
     }
 }
 
