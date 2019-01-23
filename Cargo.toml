@@ -1,0 +1,9 @@
+[package]
+name = "astro-physics"
+version = "0.1.0"
+authors = ["herrybiscuit <herrybiscuit@gmail.com>"]
+
+[dependencies]
+sdl2 = "0.32"
+specs = "0.14.0"
+specs-derive = "0.4.0"
