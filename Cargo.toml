@@ -7,3 +7,5 @@ authors = ["herrybiscuit <herrybiscuit@gmail.com>"]
 sdl2 = "0.32"
 specs = "0.14.0"
 specs-derive = "0.4.0"
+rand = "0.6"
+num = "0.2"
