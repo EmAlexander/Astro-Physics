@@ -101,7 +101,7 @@ pub fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
  
-    let window = video_subsystem.window("Astro-Physics sim", 800, 600)
+    let window = video_subsystem.window("Astro-Physics sim", (800.0*1.5) as u32, (600.0*1.5) as u32)
         .position_centered()
         .build()
         .unwrap();
@@ -120,16 +120,28 @@ pub fn main() {
 
     let mut zoom = (0.01, 0.01);
     let mut offset = (0.0, 0.0);
+    let mut pause = false;
 
     let mut rng = rand::thread_rng();
 
-    for _ in 0..1500{
-        world
-                .create_entity()
-                .with(Position { x: rng.gen_range(0.0, 1.0) * 1.0e+10f64, y: rng.gen_range(0.0, 1.0) * 1.0e+10f64})
-                .with(Velocity { x: rng.gen_range(-5.0, 5.0) * 1.0e+5f64, y: rng.gen_range(-5.0, 5.0) * 1.0e+5f64})
-                .with(Mass{ mass: 5.0e+10f64})
-                .build();
+    /*world.create_entity()
+            .with(Position { x: 0.0, y: 0.0})
+            .with(Velocity { x: 0.0, y: 0.0})
+            .with(Mass{ mass: 5.0e+15f64})
+            .build();*/
+
+    for _ in 0..4096{
+        let _x = rng.gen_range(-1.0, 1.0) * 1.0e+10f64;
+        let _y = rng.gen_range(-1.0, 1.0) * 1.0e+10f64;
+
+        let _vx = rng.gen_range(-1.0, 1.0) * 1.0e+7f64;
+        let _vy = rng.gen_range(-1.0, 1.0) * 1.0e+7f64;
+
+        world.create_entity()
+            .with(Position { x: _x, y: _y})
+            .with(Velocity { x: _vx, y: _vy})
+            .with(Mass{ mass: 5.0e+10f64})
+            .build();
     }
 
     let mut dispatcher = DispatcherBuilder::new()
@@ -180,6 +192,9 @@ pub fn main() {
                 Event::KeyUp { keycode: Some(Keycode::Left), ..} => {
                     move_left = false;
                 },
+                Event::KeyDown { keycode: Some(Keycode::Space), ..} => {
+                    pause = !pause;
+                },
                 _ => {}
             }
         }
@@ -197,8 +212,10 @@ pub fn main() {
             offset.0 += 10.0;
         }
 
-        dispatcher.dispatch(&mut world.res);
-        world.maintain();
+        if !pause{
+            dispatcher.dispatch(&mut world.res);
+            world.maintain();
+        }
 
         use specs::Join;
         let pos_storage = world.read_storage::<Position>();
